@@ -8,12 +8,15 @@ public class ObjectPool : MonoBehaviour {
     [SerializeField] [Range(0.1f, 30f)] private float spawnTimer = 1f;
 
     private GameObject[] pool;
+    private Pathfinder pathfinder;
 
     private void Awake() {
+        pathfinder = FindObjectOfType<Pathfinder>();
         PopulatePool();
     }
 
     private void Start() {
+        pathfinder.GetNewPath();
         StartCoroutine(SpawnEnemy());
     }
 

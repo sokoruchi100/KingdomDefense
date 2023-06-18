@@ -7,36 +7,32 @@ public class EnemyMover : MonoBehaviour
 {
     private const string PATH_TAG = "Path";
 
-    [SerializeField] private List<Waypoint> path = new List<Waypoint>();
     [SerializeField] [Range(0f,5f)] private float speed = 1f;
 
+    private List<Node> path = new List<Node>();
     private Enemy enemy;
+    private GridManager gridManager;
+    private Pathfinder pathfinder;
+
+    private void Awake() {
+        enemy = GetComponent<Enemy>();
+        gridManager = FindObjectOfType<GridManager>();
+        pathfinder = FindObjectOfType<Pathfinder>();
+    }
 
     private void OnEnable() {
-        FindPath();
+        RecalculatePath();
         ReturnToStart();
         StartCoroutine(FollowPath());
     }
 
-    private void Start() {
-        enemy = GetComponent<Enemy>();
-    }
-
-    private void FindPath() {
+    private void RecalculatePath() {
         path.Clear();
-
-        GameObject parent = GameObject.FindGameObjectWithTag(PATH_TAG);
-
-        foreach (Transform child in parent.transform) {
-            Waypoint waypoint = child.GetComponent<Waypoint>();
-            if (waypoint != null) {
-                path.Add(waypoint);
-            }
-        }
+        path = pathfinder.GetNewPath();
     }
 
     private void ReturnToStart() {
-        transform.position = path[0].transform.position;
+        transform.position = gridManager.GetPositionFromCoordinates(pathfinder.StartCoordinates);
     }
 
     private void FinishPath() {
@@ -45,9 +41,9 @@ public class EnemyMover : MonoBehaviour
     }
 
     private IEnumerator FollowPath() {
-        foreach (Waypoint waypoint in path) {
+        for (int i = 0; i < path.Count; i++) {
             Vector3 startingPosition = transform.position;
-            Vector3 endPosition = waypoint.transform.position;
+            Vector3 endPosition = gridManager.GetPositionFromCoordinates(path[i].coordinates);
             float travelPercent = 0f;
 
             transform.LookAt(endPosition);

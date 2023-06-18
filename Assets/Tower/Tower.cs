@@ -6,7 +6,7 @@ public class Tower : MonoBehaviour
 {
     [SerializeField] private int cost = 75;
 
-    public bool CreateTower(Tower towerPrefab, Vector3 position) {
+    public bool TryCreateTower(Tower towerPrefab, Vector3 position) {
         Bank bank = FindObjectOfType<Bank>();
 
         if (bank == null) {

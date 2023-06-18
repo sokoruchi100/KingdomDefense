@@ -9,16 +9,18 @@ public class CoordinateLabel : MonoBehaviour
 {
     [SerializeField] private Color defaultColor = Color.white;
     [SerializeField] private Color blockedColor = Color.red;
+    [SerializeField] private Color exploredColor = Color.yellow;
+    [SerializeField] private Color pathColor = Color.magenta;
 
     private TextMeshPro label;
     private Vector2Int coordinates = new Vector2Int();
-    private Waypoint waypoint;
+    private GridManager gridManager;
 
     private void Awake() {
+        gridManager = FindObjectOfType<GridManager>();
         label = GetComponent<TextMeshPro>();
-        label.enabled = false;
+        label.enabled = true;
 
-        waypoint = GetComponentInParent<Waypoint>();
         DisplayCoordinates();
     }
 
@@ -39,17 +41,28 @@ public class CoordinateLabel : MonoBehaviour
     }
 
     private void SetLabelColor() {
-        if (waypoint.IsPlaceable) {
-            label.color = defaultColor;
-        } else {
+        if (gridManager == null) return;
+
+        Node node = gridManager.GetNode(coordinates);
+
+        if (node == null) return;
+
+        if (!node.isWalkable) {
             label.color = blockedColor;
+        } else if (node.isPath) {
+            label.color = pathColor;
+        } else if (node.isExplored) {
+            label.color = exploredColor;
+        } else {
+            label.color = defaultColor;
         }
     }
 
-    //REMEMBER TO PLACE IN EDITOR FOLDER WHEN BUILDING
     private void DisplayCoordinates() {
-        coordinates.x = Mathf.RoundToInt(transform.parent.position.x / UnityEditor.EditorSnapSettings.move.x);
-        coordinates.y = Mathf.RoundToInt(transform.parent.position.z / UnityEditor.EditorSnapSettings.move.z);
+        if (gridManager == null) return;
+
+        coordinates.x = Mathf.RoundToInt(transform.parent.position.x / gridManager.UnityGridSize);
+        coordinates.y = Mathf.RoundToInt(transform.parent.position.z / gridManager.UnityGridSize);
 
         label.text = $"{coordinates.x},{coordinates.y}";
     }
