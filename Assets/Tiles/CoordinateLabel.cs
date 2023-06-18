@@ -19,7 +19,7 @@ public class CoordinateLabel : MonoBehaviour
     private void Awake() {
         gridManager = FindObjectOfType<GridManager>();
         label = GetComponent<TextMeshPro>();
-        label.enabled = true;
+        label.enabled = false;
 
         DisplayCoordinates();
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
-    [SerializeField] private int cost = 75;
+    [SerializeField] private int cost = 100;
 
     public bool TryCreateTower(Tower towerPrefab, Vector3 position) {
         Bank bank = FindObjectOfType<Bank>();
@@ -16,6 +16,20 @@ public class Tower : MonoBehaviour
         if (bank.CurrentBalance >= cost) {
             Instantiate(towerPrefab.gameObject, position, Quaternion.identity);
             bank.Withdraw(cost);
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool CanCreateTower() {
+        Bank bank = FindObjectOfType<Bank>();
+
+        if (bank == null) {
+            return false;
+        }
+
+        if (bank.CurrentBalance >= cost) {
             return true;
         }
 

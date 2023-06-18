@@ -9,6 +9,7 @@ public class Tile : MonoBehaviour
     [SerializeField] private bool isPlaceable;
 
     [SerializeField] private GameObject selected;
+    [SerializeField] private GameObject redSelected;
     public bool IsPlaceable { get { return isPlaceable; } }
 
     private GridManager gridManager;
@@ -44,15 +45,44 @@ public class Tile : MonoBehaviour
         }
     }
 
-    private void OnMouseEnter() {
+    private void OnMouseOver() {
         if (IsPlaceable && !pathfinder.WillBlockPath(coordinates)) {
-            selected.SetActive(true);
+            if (towerPrefab.CanCreateTower()) {
+                ActivateSelected();
+                DeactivateRedSelected();
+            } else {
+                ActivateRedSelected();
+                DeactivateSelected();
+            }
         }
     }
 
     private void OnMouseExit() {
+        DeactivateRedSelected();
+        DeactivateSelected();
+    }
+
+    private void ActivateSelected() {
+        if (!selected.activeInHierarchy) {
+            selected.SetActive(true);
+        }
+    }
+
+    private void DeactivateSelected() {
         if (selected.activeInHierarchy) {
             selected.SetActive(false);
+        }
+    }
+
+    private void ActivateRedSelected() {
+        if (!redSelected.activeInHierarchy) {
+            redSelected.SetActive(true);
+        }
+    }
+
+    private void DeactivateRedSelected() {
+        if (redSelected.activeInHierarchy) {
+            redSelected.SetActive(false);
         }
     }
 }
